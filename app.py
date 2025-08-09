@@ -49,7 +49,7 @@ def update_member_status():
     """Update member status based on current date"""
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         # Get all members
         cursor.execute("SELECT id, fecha_fin_mensualidad FROM clientes")
@@ -84,7 +84,7 @@ def get_clientes():
     try:
         update_member_status()
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         cursor.execute("SELECT * FROM clientes ORDER BY created_at DESC")
         clientes = cursor.fetchall()
@@ -227,7 +227,7 @@ def delete_cliente(cliente_id):
 def get_cliente_pagos(cliente_id):
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         # Get client info
         cursor.execute("SELECT * FROM clientes WHERE id = %s", (cliente_id,))
@@ -320,7 +320,7 @@ def renovar_cliente(cliente_id):
 def get_usuarios_diarios():
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         cursor.execute("SELECT * FROM usuarios_diarios ORDER BY created_at DESC")
         usuarios = cursor.fetchall()
@@ -445,7 +445,7 @@ def delete_usuario_diario(usuario_id):
 def get_ventas():
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         cursor.execute("SELECT * FROM ventas ORDER BY created_at DESC")
         ventas = cursor.fetchall()
@@ -572,7 +572,7 @@ def delete_venta(venta_id):
 def get_estadisticas():
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         # Get today's date
         today = datetime.now().strftime('%Y-%m-%d')
@@ -669,7 +669,7 @@ def get_estadisticas():
 def get_estadisticas_historial():
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         # Get last 30 days of statistics
         cursor.execute("""
@@ -700,7 +700,7 @@ def get_estadisticas_historial():
 def get_egresos():
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         cursor.execute("SELECT * FROM egresos ORDER BY created_at DESC")
         egresos = cursor.fetchall()
@@ -800,7 +800,7 @@ def login():
             return jsonify({'success': False, 'message': 'Usuario y contraseña son requeridos'}), 400
         
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         cursor.execute("SELECT * FROM usuarios WHERE usuario = %s AND activo = true", (username,))
         user = cursor.fetchone()
@@ -830,7 +830,7 @@ def login():
 def get_usuarios():
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         cursor.execute("SELECT id, nombre, usuario, rol, activo, created_at FROM usuarios ORDER BY created_at DESC")
         usuarios = cursor.fetchall()
