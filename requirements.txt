@@ -2,3 +2,4 @@ Flask==2.3.3
 Flask-CORS==4.0.0
 psycopg2-binary==2.9.9
 gunicorn
+pymysql==1.1.0  # Alternativa común
