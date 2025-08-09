@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ActiveGym - Sistema de Gestión</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Top Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-dumbbell me-2"></i>
+                <strong>ActiveGym</strong>
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text">
+                    <i class="fas fa-user me-1"></i>
+                    Administrador ActiveGym
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- Dashboard Metrics -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-number" id="total-members">0</div>
+                        <div class="metric-label">Miembros</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-number" id="daily-users">0</div>
+                        <div class="metric-label">Usuarios Hoy</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-number" id="total-income">$0</div>
+                        <div class="metric-label">Ingresos Hoy</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-minus-circle"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-number" id="expenses-today-dashboard">$0</div>
+                        <div class="metric-label">Egresos Hoy</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-number" id="balance-today">$0</div>
+                        <div class="metric-label">Balance Hoy</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Card -->
+        <div class="main-card">
+            <!-- Navigation Tabs -->
+            <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="members-tab" data-bs-toggle="tab" data-bs-target="#members"
+                        type="button" role="tab">
+                        <i class="fas fa-users me-2"></i>Miembros
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="daily-tab" data-bs-toggle="tab" data-bs-target="#daily" type="button"
+                        role="tab">
+                        <i class="fas fa-calendar-day me-2"></i>Usuarios Diarios
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="sales-tab" data-bs-toggle="tab" data-bs-target="#sales" type="button"
+                        role="tab">
+                        <i class="fas fa-shopping-cart me-2"></i>Ventas
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="egresos-tab" data-bs-toggle="tab" data-bs-target="#egresos"
+                        type="button" role="tab">
+                        <i class="fas fa-minus-circle me-2"></i>Egresos
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="statistics-tab" data-bs-toggle="tab" data-bs-target="#statistics"
+                        type="button" role="tab">
+                        <i class="fas fa-chart-bar me-2"></i>Estadísticas
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="calculator-tab" data-bs-toggle="tab" data-bs-target="#calculator"
+                        type="button" role="tab">
+                        <i class="fas fa-calculator me-2"></i>Calculadora
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="historial-tab" data-bs-toggle="tab" data-bs-target="#historial"
+                        type="button" role="tab">
+                        <i class="fas fa-history me-2"></i>Historial
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="mainTabsContent">
+                <!-- Members Tab -->
+                <div class="tab-pane fade show active" id="members" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <button class="btn btn-primary" onclick="showAddMemberModal()">
+                            <i class="fas fa-user-plus me-2"></i>Agregar Miembro
+                        </button>
+                        <div class="search-box">
+                            <input type="text" class="form-control" placeholder="Buscar miembros..."
+                                id="search-members">
+                            <i class="fas fa-search search-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Estado</th>
+                                    <th>Vence</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="members-table-body">
+                                <!-- Members will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Daily Users Tab -->
+                <div class="tab-pane fade" id="daily" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <button class="btn btn-primary" onclick="showAddDailyUserModal()">
+                            <i class="fas fa-user-plus me-2"></i>Agregar Usuario Diario
+                        </button>
+                        <div class="search-box">
+                            <input type="text" class="form-control" placeholder="Buscar usuarios diarios..."
+                                id="search-daily">
+                            <i class="fas fa-search search-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Clientes</th>
+                                    <th>Precio por Cliente</th>
+                                    <th>Total</th>
+                                    <th>Hora Entrada</th>
+                                </tr>
+                            </thead>
+                            <tbody id="daily-table-body">
+                                <!-- Daily users will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Sales Tab -->
+                <div class="tab-pane fade" id="sales" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <button class="btn btn-primary" onclick="showAddSaleModal()">
+                            <i class="fas fa-plus me-2"></i>Registrar Venta
+                        </button>
+                        <div class="search-box">
+                            <input type="text" class="form-control" placeholder="Buscar ventas..." id="search-sales">
+                            <i class="fas fa-search search-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unitario</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sales-table-body">
+                                <!-- Sales will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Egresos Tab -->
+                <div class="tab-pane fade" id="egresos" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <button class="btn btn-primary" onclick="showAddEgresoModal()">
+                            <i class="fas fa-plus me-2"></i>Agregar Gasto
+                        </button>
+                        <div class="search-box">
+                            <input type="text" class="form-control" placeholder="Buscar egresos..." id="search-egresos">
+                            <i class="fas fa-search search-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Descripción</th>
+                                    <th>Monto</th>
+                                </tr>
+                            </thead>
+                            <tbody id="egresos-table-body">
+                                <!-- Egresos will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Statistics Tab -->
+                <div class="tab-pane fade" id="statistics" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <h5>Ingresos de Hoy</h5>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="stat-item">
+                                            <div class="stat-label">Mensualidades</div>
+                                            <div class="stat-value text-primary" id="monthly-income">$0</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="stat-item">
+                                            <div class="stat-label">Usuarios Diarios</div>
+                                            <div class="stat-value text-success" id="daily-income">$0</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="stat-item">
+                                            <div class="stat-label">Ventas Productos</div>
+                                            <div class="stat-value text-warning" id="sales-income">$0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="text-center">
+                                    <h4>Total General: <span class="text-success" id="grand-total-income">$0</span></h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <h5>Resumen de Miembros</h5>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="stat-item">
+                                            <div class="stat-label">Activos</div>
+                                            <div class="stat-value text-success" id="active-members">0</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="stat-item">
+                                            <div class="stat-label">Vencidos</div>
+                                            <div class="stat-value text-danger" id="expired-members-stats">0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <h5>Egresos de Hoy</h5>
+                                <div class="text-center">
+                                    <h4 class="text-danger" id="expenses-today">$0</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <h5>Ganancias del Día</h5>
+                                <div class="text-center">
+                                    <h4 class="text-success" id="profit-today">$0</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+
+                <!-- Calculator Tab -->
+                <div class="tab-pane fade" id="calculator" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <h5><i class="fas fa-calculator me-2"></i>Calculadora de Macronutrientes</h5>
+                                <form id="calculatorForm">
+                                    <div class="row">
+                                        <div class="col-md-6">
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Peso (kg) *</label>
+                                                <input type="number" step="0.1" class="form-control" id="weight" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Altura (cm) *</label>
+                                                <input type="number" step="0.1" class="form-control" id="height" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Edad *</label>
+                                                <input type="number" class="form-control" id="age" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Género *</label>
+                                                <select class="form-control" id="gender" required>
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="male">Masculino</option>
+                                                    <option value="female">Femenino</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Nivel de Actividad *</label>
+                                                <select class="form-control" id="activity" required>
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="1.2">Sedentario (trabajo sentado, poco ejercicio)
+                                                    </option>
+                                                    <option value="1.37">Ligeramente activo (1-3 días ejercicio/semana)
+                                                    </option>
+                                                    <option value="1.55">Moderado/Activo (3-5 días ejercicio/semana)
+                                                    </option>
+                                                    <option value="1.73">Muy activo (6-7 días ejercicio/semana)</option>
+                                                    <option value="1.9">Atleta (entrenamiento 2x día)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Objetivo *</label>
+                                                <select class="form-control" id="goal" required>
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="lose">Pérdida de peso</option>
+                                                    <option value="maintain">Mantenimiento</option>
+                                                    <option value="gain">Ganancia de peso/músculo</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary me-2">
+                                            <i class="fas fa-calculator me-2"></i>Calcular
+                                        </button>
+
+                                        <button type="button" class="btn btn-outline-secondary" id="limpiarCalculadora">
+                                            <i class="fas fa-broom me-2"></i>Limpiar
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <h5><i class="fas fa-chart-pie me-2"></i>Resultados</h5>
+                                <div id="calculatorResults" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="stat-item">
+                                                <div class="stat-label">IMC</div>
+                                                <div class="stat-value text-primary" id="bmi-result">-</div>
+                                                <small class="text-muted" id="bmi-category">-</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="stat-item">
+                                                <div class="stat-label">TMB</div>
+                                                <div class="stat-value text-success" id="bmr-result">-</div>
+                                                <small class="text-muted">Calorías/día</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-6">
+                                            <div class="stat-item">
+                                                <div class="stat-label">Peso Ideal</div>
+                                                <div class="stat-value text-info" id="ideal-weight">-</div>
+                                                <small class="text-muted">kg</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="stat-item">
+                                                <div class="stat-label">Potencial Muscular</div>
+                                                <div class="stat-value text-warning" id="muscle-potential">-</div>
+                                                <small class="text-muted">kg (5-6% grasa)</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="stat-item">
+                                                <div class="stat-label">Calorías Diarias</div>
+                                                <div class="stat-value text-warning" id="daily-calories">-</div>
+                                                <small class="text-muted" id="calories-description">-</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <h6>Macronutrientes Diarios:</h6>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="stat-item">
+                                                <div class="stat-label">Proteínas</div>
+                                                <div class="stat-value text-danger" id="protein-result">-</div>
+                                                <small class="text-muted">gramos</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="stat-item">
+                                                <div class="stat-label">Carbohidratos</div>
+                                                <div class="stat-value text-info" id="carbs-result">-</div>
+                                                <small class="text-muted">gramos</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="stat-item">
+                                                <div class="stat-label">Grasas</div>
+                                                <div class="stat-value text-warning" id="fats-result">-</div>
+                                                <small class="text-muted">gramos</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="text-center">
+                                        <button type="button" class="btn btn-success" id="generateMealPlanBtn"
+                                            style="display: none;">
+                                            <i class="fas fa-utensils me-2"></i>Generar Plan de Comidas
+                                        </button>
+
+
+                                    </div>
+                                </div>
+                                <div id="calculatorPlaceholder" class="text-center text-muted">
+                                    <i class="fas fa-calculator fa-3x mb-3"></i>
+                                    <p>Ingresa los datos y haz clic en "Calcular" para ver los resultados</p>
+                                </div>
+                                <div class="alert alert-info mt-3">
+                                    <h6><i class="fas fa-flask me-2"></i>Base Científica</h6>
+                                    <small>
+                                        <strong>Ecuación Mifflin-St Jeor:</strong> Para el cálculo del TMB<br>
+                                        <strong>Factores de Actividad:</strong> Basados en el Compendium of Physical
+                                        Activities<br>
+                                        <strong>Macronutrientes:</strong> Proteínas 1.6-2.2 g/kg, grasas 15-80%, carbos
+                                        ajustables<br>
+                                        <strong>Déficit/Superávit:</strong> 20% del TDEE para resultados óptimos
+                                    </small>
+                                </div>
+
+                                <!-- Plan de Comidas -->
+                                <div id="mealPlanSection" style="display: none;">
+                                    <hr>
+                                    <h5><i class="fas fa-utensils me-2"></i>Plan de Comidas Personalizado</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead class="table-dark">
+                                                <tr>
+                                                    <th>Comida</th>
+                                                    <th>Calorías</th>
+                                                    <th>Proteínas</th>
+                                                    <th>Carbohidratos</th>
+                                                    <th>Grasas</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="mealPlanTable">
+                                                <!-- Se llenará dinámicamente -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="alert alert-warning mt-3">
+                                        <h6><i class="fas fa-lightbulb me-2"></i>Consejos de Implementación</h6>
+                                        <small>
+                                            • <strong>Distribución:</strong> 4-6 comidas diarias para mejor absorción<br>
+                                            • <strong>Proteínas:</strong> Consumir cada 3-4 horas para síntesis muscular<br>
+                                            • <strong>Carbohidratos:</strong> Mayor cantidad en pre/post entrenamiento<br>
+                                            • <strong>Grasas:</strong> Evitar 2-3 horas antes del entrenamiento
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Historial Tab -->
+                <div class="tab-pane fade" id="historial" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-history me-2"></i>Historial de Estadísticas Diarias</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Total Miembros</th>
+                                            <th>Usuarios Diarios</th>
+                                            <th>Ventas</th>
+                                            <th>Ingresos Totales</th>
+                                            <th>Egresos Totales</th>
+                                            <th>Ganancias Diarias</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="historial-table-body">
+                                        <!-- Historial will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Member Modal -->
+    <div class="modal fade" id="addMemberModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-plus me-2"></i>Nuevo Miembro
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addMemberForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Nombre *</label>
+                                    <input type="text" class="form-control" id="member-nombre" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Apellido *</label>
+                                    <input type="text" class="form-control" id="member-apellido" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Peso (kg)</label>
+                                    <input type="number" step="0.1" class="form-control" id="member-peso">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Teléfono *</label>
+                                    <input type="tel" class="form-control" id="member-telefono" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Fecha de Inicio *</label>
+                                    <input type="date" class="form-control" id="member-fecha-inicio" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Duración *</label>
+                                    <select class="form-control" id="member-duracion" required>
+                                        <option value="">Seleccionar duración</option>
+                                        <option value="7">1 Semana (7 días)</option>
+                                        <option value="14">2 Semanas (14 días)</option>
+                                        <option value="30">1 Mes (30 días)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Precio *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" step="0.01" class="form-control" id="member-precio"
+                                            placeholder="50.00" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Nota:</strong> La fecha de fin se calculará automáticamente según la duración
+                            seleccionada.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Daily User Modal -->
+    <div class="modal fade" id="addDailyUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-plus me-2"></i>Nuevo Usuario Diario
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addDailyUserForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Número de Clientes *</label>
+                                    <input type="number" min="1" class="form-control" id="daily-cantidad" value="1"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Precio por Cliente *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" step="0.01" class="form-control" id="daily-precio-unitario"
+                                            placeholder="2.00" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Total Calculado</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="text" class="form-control" id="daily-total-calculado" readonly>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="addDailyUser()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Sale Modal -->
+    <div class="modal fade" id="addSaleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-shopping-cart me-2"></i>Nueva Venta
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addSaleForm">
+                        <div class="mb-3">
+                            <label class="form-label">Producto *</label>
+                            <input type="text" class="form-control" id="sale-producto"
+                                placeholder="Ej: Agua Grande, Proteína, etc." required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Cantidad *</label>
+                                    <input type="number" min="1" class="form-control" id="sale-cantidad" value="1"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Precio Unitario *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" step="0.01" class="form-control" id="sale-precio-unitario"
+                                            placeholder="0.60" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Total Calculado</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="text" class="form-control" id="sale-total-calculado" readonly>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="addSale()">Guardar Venta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Renew Member Modal -->
+    <div class="modal fade" id="renewMemberModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-sync-alt me-2"></i>Renovar Membresía
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <strong>Miembro:</strong> <span id="renew-member-name"></span><br>
+                        <strong>Estado Actual:</strong> <span id="renew-member-status"></span><br>
+                        <strong>Vence:</strong> <span id="renew-member-expires"></span>
+                    </div>
+
+                    <form id="renewMemberForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Fecha de Inicio *</label>
+                                    <input type="date" class="form-control" id="renew-fecha-inicio" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Duración *</label>
+                                    <select class="form-control" id="renew-duracion" required>
+                                        <option value="">Seleccionar duración</option>
+                                        <option value="7">1 Semana (7 días)</option>
+                                        <option value="14">2 Semanas (14 días)</option>
+                                        <option value="30">1 Mes (30 días)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Precio *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" step="0.01" class="form-control" id="renew-precio"
+                                            required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Fecha de Fin Calculada</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="renew-fecha-fin-calculada" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            La fecha de fin se calculará automáticamente según la duración seleccionada.
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" form="renewMemberForm">Renovar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Member History Modal -->
+    <div class="modal fade" id="memberHistoryModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-history me-2"></i>Historial del Miembro
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="member-history-content">
+                    <!-- History content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Egreso Modal -->
+    <div class="modal fade" id="addEgresoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-minus-circle me-2"></i>Agregar Gasto
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addEgresoForm">
+                        <div class="mb-3">
+                            <label class="form-label">Descripción *</label>
+                            <input type="text" class="form-control" id="egreso-descripcion" placeholder="Ej: Carrera"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Monto *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" step="0.01" class="form-control" id="egreso-monto"
+                                    placeholder="1.50" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="egreso-fecha">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="addEgreso()">Guardar Gasto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Sistema de Notificaciones -->
+    <div id="notification-container" class="position-fixed" style="top: 20px; right: 20px; z-index: 9999;"></div>
+
+    <!-- Modal para confirmar eliminación -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-body text-center p-4">
+                    <!-- Icono de advertencia -->
+                    <div class="mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-warning bg-opacity-10 rounded-circle"
+                            style="width: 80px; height: 80px;">
+                            <i class="fas fa-exclamation-triangle text-warning" style="font-size: 2.5rem;"></i>
+                        </div>
+                    </div>
+
+                    <!-- Título -->
+                    <h4 class="modal-title mb-3 text-dark fw-bold">¿Estás seguro?</h4>
+
+                    <!-- Mensaje -->
+                    <p class="text-muted mb-4 fs-6">
+                        Esta acción no se puede deshacer. El cliente será eliminado permanentemente.
+                    </p>
+
+                    <!-- Botones -->
+                    <div class="d-flex gap-3 justify-content-center">
+                        <button type="button" class="btn btn-light px-4 py-2" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Cancelar
+                        </button>
+                        <button type="button" class="btn btn-danger px-4 py-2" id="confirmDeleteBtn">
+                            <i class="fas fa-trash me-2"></i>Sí, eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
