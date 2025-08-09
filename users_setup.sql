@@ -1,4 +1,4 @@
--- Tabla de usuarios/socios
+-- Tabla de usuarios/socios del SISTEMA (acceso al panel de administración)
 CREATE TABLE IF NOT EXISTS usuarios (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -10,11 +10,14 @@ CREATE TABLE IF NOT EXISTS usuarios (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insertar el administrador principal
+-- Insertar el administrador principal del SISTEMA
 INSERT INTO usuarios (nombre, usuario, password, rol) 
-VALUES ('Administrador Principal', 'administrador principal', 'admiRocki1976', 'admin')
+VALUES ('Administrador Principal', 'administradorprincipal', 'admiRocki1976', 'admin')
 ON CONFLICT (usuario) DO NOTHING;
 
--- Índice para búsquedas por usuario
+-- Índices para búsquedas por usuario
 CREATE INDEX IF NOT EXISTS idx_usuarios_usuario ON usuarios(usuario);
 CREATE INDEX IF NOT EXISTS idx_usuarios_rol ON usuarios(rol);
+
+-- NOTA: Los miembros del gimnasio (clientes) están en la tabla 'clientes'
+-- y NO tienen acceso al sistema de administración

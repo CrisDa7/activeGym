@@ -1763,9 +1763,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('renew-fecha-inicio')?.addEventListener('change', calculateRenewEndDate);
 });
 
-// ===== FUNCIONES PARA GESTIÓN DE SOCIOS =====
+// ===== FUNCIONES PARA GESTIÓN DE USUARIOS DEL SISTEMA =====
 
-// Cargar socios
+// Cargar usuarios del sistema
 function loadSocios() {
     fetch(`${API_BASE_URL}/usuarios`)
         .then(response => response.json())
@@ -1773,8 +1773,8 @@ function loadSocios() {
             if (Array.isArray(data)) {
                 updateSociosTable(data);
             } else {
-                console.error('Error loading socios:', data);
-                showNotification('Error', 'Error al cargar socios', 'error');
+                console.error('Error loading usuarios:', data);
+                showNotification('Error', 'Error al cargar usuarios del sistema', 'error');
             }
         })
         .catch(error => {
@@ -1783,7 +1783,7 @@ function loadSocios() {
         });
 }
 
-// Actualizar tabla de socios
+// Actualizar tabla de usuarios del sistema
 function updateSociosTable(socios) {
     const tableBody = document.getElementById('socios-table-body');
     if (!tableBody) return;
@@ -1795,7 +1795,7 @@ function updateSociosTable(socios) {
             <tr>
                 <td colspan="6" class="text-center text-muted">
                     <i class="fas fa-users fa-2x mb-2"></i>
-                    <p>No hay socios registrados</p>
+                    <p>No hay usuarios del sistema registrados</p>
                 </td>
             </tr>
         `;
@@ -1827,14 +1827,14 @@ function updateSociosTable(socios) {
     });
 }
 
-// Mostrar modal para agregar socio
+// Mostrar modal para agregar usuario del sistema
 function showAddSocioModal() {
     document.getElementById('addSocioForm').reset();
     const modal = new bootstrap.Modal(document.getElementById('addSocioModal'));
     modal.show();
 }
 
-// Agregar socio
+// Agregar usuario del sistema
 function addSocio() {
     const nombre = document.getElementById('socio-nombre').value;
     const usuario = document.getElementById('socio-usuario').value;
@@ -1865,7 +1865,7 @@ function addSocio() {
             bootstrap.Modal.getInstance(document.getElementById('addSocioModal')).hide();
             loadSocios();
         } else {
-            showNotification('Error', data.error || 'Error al agregar socio', 'error');
+            showNotification('Error', data.error || 'Error al agregar usuario del sistema', 'error');
         }
     })
     .catch(error => {
@@ -1874,7 +1874,7 @@ function addSocio() {
     });
 }
 
-// Editar socio
+// Editar usuario del sistema
 function editSocio(socioId) {
     fetch(`${API_BASE_URL}/usuarios/${socioId}`)
         .then(response => response.json())
@@ -1891,11 +1891,11 @@ function editSocio(socioId) {
         })
         .catch(error => {
             console.error('Error:', error);
-            showNotification('Error', 'Error al cargar datos del socio', 'error');
+            showNotification('Error', 'Error al cargar datos del usuario', 'error');
         });
 }
 
-// Actualizar socio
+// Actualizar usuario del sistema
 function updateSocio() {
     const socioId = document.getElementById('edit-socio-id').value;
     const nombre = document.getElementById('edit-socio-nombre').value;
@@ -1929,7 +1929,7 @@ function updateSocio() {
             bootstrap.Modal.getInstance(document.getElementById('editSocioModal')).hide();
             loadSocios();
         } else {
-            showNotification('Error', data.error || 'Error al actualizar socio', 'error');
+            showNotification('Error', data.error || 'Error al actualizar usuario del sistema', 'error');
         }
     })
     .catch(error => {
@@ -1938,9 +1938,9 @@ function updateSocio() {
     });
 }
 
-// Eliminar socio
+// Eliminar usuario del sistema
 function deleteSocio(socioId) {
-    if (confirm('¿Estás seguro de que quieres eliminar este socio?')) {
+    if (confirm('¿Estás seguro de que quieres eliminar este usuario del sistema?')) {
         fetch(`${API_BASE_URL}/usuarios/${socioId}`, {
             method: 'DELETE'
         })
@@ -1950,7 +1950,7 @@ function deleteSocio(socioId) {
                 showNotification('Éxito', data.message, 'success');
                 loadSocios();
             } else {
-                showNotification('Error', data.error || 'Error al eliminar socio', 'error');
+                showNotification('Error', data.error || 'Error al eliminar usuario del sistema', 'error');
             }
         })
         .catch(error => {
@@ -1960,5 +1960,5 @@ function deleteSocio(socioId) {
     }
 }
 
-// Cargar socios cuando se hace clic en el tab
+// Cargar usuarios del sistema cuando se hace clic en el tab
 document.getElementById('socios-tab')?.addEventListener('click', loadSocios);
