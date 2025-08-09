@@ -788,9 +788,183 @@ def test_db():
             }
         }), 500
 
+# Login API
+@app.route('/api/login', methods=['POST'])
+def login():
+    try:
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
+        
+        if not username or not password:
+            return jsonify({'success': False, 'message': 'Usuario y contraseña son requeridos'}), 400
+        
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        cursor.execute("SELECT * FROM usuarios WHERE usuario = %s AND activo = true", (username,))
+        user = cursor.fetchone()
+        
+        cursor.close()
+        conn.close()
+        
+        if user and user['password'] == password:
+            return jsonify({
+                'success': True,
+                'message': 'Login exitoso',
+                'user': {
+                    'id': user['id'],
+                    'nombre': user['nombre'],
+                    'usuario': user['usuario'],
+                    'rol': user['rol']
+                }
+            })
+        else:
+            return jsonify({'success': False, 'message': 'Credenciales incorrectas'}), 401
+            
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+# Usuarios/Socios APIs
+@app.route('/api/usuarios', methods=['GET'])
+def get_usuarios():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        cursor.execute("SELECT id, nombre, usuario, rol, activo, created_at FROM usuarios ORDER BY created_at DESC")
+        usuarios = cursor.fetchall()
+        
+        # Convert datetime objects to strings
+        for usuario in usuarios:
+            if usuario['created_at']:
+                usuario['created_at'] = usuario['created_at'].isoformat()
+        
+        cursor.close()
+        conn.close()
+        
+        return jsonify(usuarios)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/usuarios', methods=['POST'])
+def add_usuario():
+    try:
+        data = request.get_json()
+        
+        nombre = data.get('nombre')
+        usuario = data.get('usuario')
+        password = data.get('password')
+        rol = data.get('rol', 'socio')
+        
+        if not nombre or not usuario or not password:
+            return jsonify({'error': 'Nombre, usuario y contraseña son requeridos'}), 400
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Verificar si el usuario ya existe
+        cursor.execute("SELECT id FROM usuarios WHERE usuario = %s", (usuario,))
+        if cursor.fetchone():
+            return jsonify({'error': 'El usuario ya existe'}), 400
+        
+        cursor.execute("""
+            INSERT INTO usuarios (nombre, usuario, password, rol)
+            VALUES (%s, %s, %s, %s)
+        """, (nombre, usuario, password, rol))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return jsonify({'message': 'Usuario agregado exitosamente'}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/usuarios/<int:usuario_id>', methods=['PUT'])
+def update_usuario(usuario_id):
+    try:
+        data = request.get_json()
+        
+        nombre = data.get('nombre')
+        usuario = data.get('usuario')
+        password = data.get('password')
+        rol = data.get('rol')
+        activo = data.get('activo')
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Verificar si el usuario existe
+        cursor.execute("SELECT id FROM usuarios WHERE id = %s", (usuario_id,))
+        if not cursor.fetchone():
+            return jsonify({'error': 'Usuario no encontrado'}), 404
+        
+        # Construir query de actualización
+        update_fields = []
+        values = []
+        
+        if nombre is not None:
+            update_fields.append("nombre = %s")
+            values.append(nombre)
+        if usuario is not None:
+            update_fields.append("usuario = %s")
+            values.append(usuario)
+        if password is not None:
+            update_fields.append("password = %s")
+            values.append(password)
+        if rol is not None:
+            update_fields.append("rol = %s")
+            values.append(rol)
+        if activo is not None:
+            update_fields.append("activo = %s")
+            values.append(activo)
+        
+        if update_fields:
+            update_fields.append("updated_at = CURRENT_TIMESTAMP")
+            values.append(usuario_id)
+            
+            query = f"UPDATE usuarios SET {', '.join(update_fields)} WHERE id = %s"
+            cursor.execute(query, values)
+            
+            conn.commit()
+        
+        cursor.close()
+        conn.close()
+        
+        return jsonify({'message': 'Usuario actualizado exitosamente'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/usuarios/<int:usuario_id>', methods=['DELETE'])
+def delete_usuario(usuario_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Verificar si el usuario existe
+        cursor.execute("SELECT id FROM usuarios WHERE id = %s", (usuario_id,))
+        if not cursor.fetchone():
+            return jsonify({'error': 'Usuario no encontrado'}), 404
+        
+        # Eliminar usuario (o marcar como inactivo)
+        cursor.execute("DELETE FROM usuarios WHERE id = %s", (usuario_id,))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return jsonify({'message': 'Usuario eliminado exitosamente'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 # Frontend routes
 @app.route('/')
 def serve_index():
+    return send_from_directory('.', 'login.html')
+
+@app.route('/dashboard')
+def serve_dashboard():
     return send_from_directory('.', 'index.html')
 
 @app.route('/<path:filename>')

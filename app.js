@@ -1763,6 +1763,202 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('renew-fecha-inicio')?.addEventListener('change', calculateRenewEndDate);
 });
 
+// ===== FUNCIONES PARA GESTIÓN DE SOCIOS =====
 
+// Cargar socios
+function loadSocios() {
+    fetch(`${API_BASE_URL}/usuarios`)
+        .then(response => response.json())
+        .then(data => {
+            if (Array.isArray(data)) {
+                updateSociosTable(data);
+            } else {
+                console.error('Error loading socios:', data);
+                showNotification('Error', 'Error al cargar socios', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error', 'Error de conexión', 'error');
+        });
+}
 
- 
+// Actualizar tabla de socios
+function updateSociosTable(socios) {
+    const tableBody = document.getElementById('socios-table-body');
+    if (!tableBody) return;
+    
+    tableBody.innerHTML = '';
+    
+    if (socios.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-muted">
+                    <i class="fas fa-users fa-2x mb-2"></i>
+                    <p>No hay socios registrados</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    socios.forEach(socio => {
+        const row = document.createElement('tr');
+        const statusBadge = socio.activo ? 
+            '<span class="badge bg-success">Activo</span>' : 
+            '<span class="badge bg-danger">Inactivo</span>';
+        
+        row.innerHTML = `
+            <td>${socio.nombre}</td>
+            <td>${socio.usuario}</td>
+            <td><span class="badge bg-${socio.rol === 'admin' ? 'primary' : 'secondary'}">${socio.rol}</span></td>
+            <td>${statusBadge}</td>
+            <td>${formatDateTime(socio.created_at)}</td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="editSocio(${socio.id})">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteSocio(${socio.id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+// Mostrar modal para agregar socio
+function showAddSocioModal() {
+    document.getElementById('addSocioForm').reset();
+    const modal = new bootstrap.Modal(document.getElementById('addSocioModal'));
+    modal.show();
+}
+
+// Agregar socio
+function addSocio() {
+    const nombre = document.getElementById('socio-nombre').value;
+    const usuario = document.getElementById('socio-usuario').value;
+    const password = document.getElementById('socio-password').value;
+    const rol = document.getElementById('socio-rol').value;
+    
+    if (!nombre || !usuario || !password) {
+        showNotification('Error', 'Todos los campos son requeridos', 'error');
+        return;
+    }
+    
+    fetch(`${API_BASE_URL}/usuarios`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            nombre,
+            usuario,
+            password,
+            rol
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            showNotification('Éxito', data.message, 'success');
+            bootstrap.Modal.getInstance(document.getElementById('addSocioModal')).hide();
+            loadSocios();
+        } else {
+            showNotification('Error', data.error || 'Error al agregar socio', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error', 'Error de conexión', 'error');
+    });
+}
+
+// Editar socio
+function editSocio(socioId) {
+    fetch(`${API_BASE_URL}/usuarios/${socioId}`)
+        .then(response => response.json())
+        .then(socio => {
+            document.getElementById('edit-socio-id').value = socio.id;
+            document.getElementById('edit-socio-nombre').value = socio.nombre;
+            document.getElementById('edit-socio-usuario').value = socio.usuario;
+            document.getElementById('edit-socio-rol').value = socio.rol;
+            document.getElementById('edit-socio-activo').value = socio.activo.toString();
+            document.getElementById('edit-socio-password').value = '';
+            
+            const modal = new bootstrap.Modal(document.getElementById('editSocioModal'));
+            modal.show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error', 'Error al cargar datos del socio', 'error');
+        });
+}
+
+// Actualizar socio
+function updateSocio() {
+    const socioId = document.getElementById('edit-socio-id').value;
+    const nombre = document.getElementById('edit-socio-nombre').value;
+    const usuario = document.getElementById('edit-socio-usuario').value;
+    const password = document.getElementById('edit-socio-password').value;
+    const rol = document.getElementById('edit-socio-rol').value;
+    const activo = document.getElementById('edit-socio-activo').value === 'true';
+    
+    const updateData = {
+        nombre,
+        usuario,
+        rol,
+        activo
+    };
+    
+    if (password) {
+        updateData.password = password;
+    }
+    
+    fetch(`${API_BASE_URL}/usuarios/${socioId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            showNotification('Éxito', data.message, 'success');
+            bootstrap.Modal.getInstance(document.getElementById('editSocioModal')).hide();
+            loadSocios();
+        } else {
+            showNotification('Error', data.error || 'Error al actualizar socio', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error', 'Error de conexión', 'error');
+    });
+}
+
+// Eliminar socio
+function deleteSocio(socioId) {
+    if (confirm('¿Estás seguro de que quieres eliminar este socio?')) {
+        fetch(`${API_BASE_URL}/usuarios/${socioId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                showNotification('Éxito', data.message, 'success');
+                loadSocios();
+            } else {
+                showNotification('Error', data.error || 'Error al eliminar socio', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error', 'Error de conexión', 'error');
+        });
+    }
+}
+
+// Cargar socios cuando se hace clic en el tab
+document.getElementById('socios-tab')?.addEventListener('click', loadSocios);
