@@ -1,5 +1,5 @@
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import psycopg2
 import psycopg2.extras
@@ -746,6 +746,16 @@ def add_egreso():
         return jsonify({'message': 'Egreso agregado exitosamente'}), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+# Frontend routes
+@app.route('/')
+def serve_index():
+    return send_from_directory('.', 'index.html')
+
+@app.route('/<path:filename>')
+def serve_static(filename):
+    return send_from_directory('.', filename)
 
 
 if __name__ == '__main__':
