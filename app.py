@@ -748,6 +748,46 @@ def add_egreso():
         return jsonify({'error': str(e)}), 500
 
 
+# Test endpoint to check environment variables
+@app.route('/api/test-db')
+def test_db():
+    try:
+        # Print environment variables for debugging
+        db_config = {
+            'host': os.environ.get('DB_HOST', 'NOT_SET'),
+            'user': os.environ.get('DB_USER', 'NOT_SET'),
+            'password': os.environ.get('DB_PASSWORD', 'NOT_SET'),
+            'dbname': os.environ.get('DB_NAME', 'NOT_SET'),
+            'port': os.environ.get('DB_PORT', 'NOT_SET')
+        }
+        
+        # Try to connect to database
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM clientes")
+        count = cursor.fetchone()[0]
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Database connection successful',
+            'clientes_count': count,
+            'db_config': db_config
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'db_config': {
+                'host': os.environ.get('DB_HOST', 'NOT_SET'),
+                'user': os.environ.get('DB_USER', 'NOT_SET'),
+                'password': os.environ.get('DB_PASSWORD', 'NOT_SET'),
+                'dbname': os.environ.get('DB_NAME', 'NOT_SET'),
+                'port': os.environ.get('DB_PORT', 'NOT_SET')
+            }
+        }), 500
+
 # Frontend routes
 @app.route('/')
 def serve_index():
