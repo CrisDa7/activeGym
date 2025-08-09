@@ -2,6 +2,6 @@ services:
   - type: web
     name: activegym-backend
     env: python
-    buildCommand: ./build.sh
-    startCommand: gunicorn wsgi:app --bind 0.0.0.0:$PORT
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT wsgi:app
     plan: free
